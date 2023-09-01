@@ -1,0 +1,38 @@
+{
+    "meta" : {
+        "label": "Microsoft Graph SSO",
+        "description": "",
+        "icon": "icon-cloud"
+    },
+    "defaultDefinableInline": false,
+    "defaultDefinableAtProjectLevel": false,
+    "pluginParams": [],
+    "params": [
+        {
+            "name": "sharepoint_oauth",
+            "type": "CREDENTIAL_REQUEST",
+            "label": "Azure Single Sign On",
+            "credentialRequestSettings": {
+                "type": "OAUTH2",
+                "authorizationEndpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+                "tokenEndpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+                "scope": "offline_access User.Read Files.ReadWrite.All Sites.ReadWrite.All Sites.Manage.All"
+            },
+            "mandatory": true
+        },
+        {
+            "name": "authorizationEndpoint",
+            "label": "Authorization endpoint",
+            "type": "STRING",
+            "description": "See documentation",
+            "mandatory": false
+        },
+        {
+            "name": "tokenEndpoint",
+            "label": "Token endpoint",
+            "type": "STRING",
+            "description": "See documentation",
+            "mandatory": false
+        }
+    ]
+}
