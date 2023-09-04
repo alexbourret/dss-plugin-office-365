@@ -74,12 +74,27 @@
             "triggerParameters": ["search_space", "sharepoint_oauth"]
         },
         {
+            "name": "sharepoint_site_overwrite",
+            "label": "Site name",
+            "description": "",
+            "type": "STRING",
+            "visibilityCondition": "model.sharepoint_site_id=='dku_manual_select'"
+        },
+        {
             "name": "sharepoint_drive_id",
             "label": " ",
             "description": "Select a drive",
             "type": "SELECT",
+            "visibilityCondition": "model.sharepoint_site_id.length>=0",
             "getChoicesFromPython": true,
-            "triggerParameters": ["sharepoint_site_id"]
+            "triggerParameters": ["sharepoint_site_id", "sharepoint_site_overwrite"]
+        },
+        {
+            "name": "sharepoint_root_overwrite",
+            "label": "List name",
+            "description": "",
+            "type": "STRING",
+            "visibilityCondition": "model.sharepoint_drive_id=='dku_manual_select'"
         }
     ]
 }

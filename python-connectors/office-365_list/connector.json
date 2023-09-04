@@ -39,19 +39,34 @@
         },
         {
             "name": "sharepoint_site_id",
-            "label": "Sites",
+            "label": "Site",
             "description": "Select a site",
             "type": "SELECT",
             "getChoicesFromPython": true,
             "triggerParameters": ["sharepoint_oauth"]
         },
         {
+            "name": "sharepoint_site_overwrite",
+            "label": "Site name",
+            "description": "",
+            "type": "STRING",
+            "visibilityCondition": "model.sharepoint_site_id=='dku_manual_select'"
+        },
+        {
             "name": "sharepoint_list_id",
-            "label": "Listes",
+            "label": "List",
             "description": "Select a list",
             "type": "SELECT",
+            "visibilityCondition": "model.sharepoint_site_id.length>=0",
             "getChoicesFromPython": true,
-            "triggerParameters": ["sharepoint_site_id"]
+            "triggerParameters": ["sharepoint_site_id", "sharepoint_site_overwrite"]
+        },
+        {
+            "name": "sharepoint_list_title",
+            "label": "List name",
+            "description": "",
+            "type": "STRING",
+            "visibilityCondition": "model.sharepoint_list_id=='dku_manual_select'"
         }
     ]
 }

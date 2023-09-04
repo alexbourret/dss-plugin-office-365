@@ -31,6 +31,14 @@ class Office365FSProvider(FSProvider):
         auth_token = get_credentials_from_config(config)
         self.session = Office365Session(auth_token)
         self.sharepoint_drive_id = config.get("sharepoint_drive_id")
+        if self.sharepoint_drive_id == "dku_manual_select":
+            self.sharepoint_site_id = config.get("sharepoint_site_id")
+            if self.sharepoint_site_id == "dku_manual_select":
+                sharepoint_site_overwrite = config.get("sharepoint_site_overwrite")
+                self.sharepoint_site_id = self.session.get_site_id(sharepoint_site_overwrite)
+            site = self.session.get_site(self.sharepoint_site_id)
+            sharepoint_root_overwrite = config.get("sharepoint_root_overwrite")
+            self.sharepoint_drive_id = site.get_drive_id(sharepoint_root_overwrite)
         self.sharepoint_drive = self.session.get_drive(self.sharepoint_drive_id)
 
     def get_full_path(self, path):

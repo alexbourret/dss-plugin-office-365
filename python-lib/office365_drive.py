@@ -158,7 +158,13 @@ class Office365Drive(object):
         return url
 
     def get_drives_url(self):
-        return "https://graph.microsoft.com/v1.0/drives/{}".format(self.drive_id)
+        return "/".join(
+            [
+                self.session.get_endpoint_url(),
+                "drives",
+                "{}".format(self.drive_id)
+            ]
+        )
 
 
 def split_file_path(file_path):

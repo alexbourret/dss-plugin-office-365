@@ -21,10 +21,21 @@ class Office365ListConnector(Connector):
         self.sharepoint_list_id = config.get("sharepoint_list_id")
         if not self.sharepoint_site_id:
             raise Exception("A SharePoint site must be selected")
+        session = Office365Session(access_token=self.auth_token)
+
+        if self.sharepoint_site_id == "dku_manual_select":
+            sharepoint_site_overwrite = config.get("sharepoint_site_overwrite")
+            self.sharepoint_site_id = session.get_site_id(sharepoint_site_overwrite)
+
+        site = session.get_site(self.sharepoint_site_id)
+
+        if self.sharepoint_list_id == "dku_manual_select":
+            sharepoint_list_title = config.get("sharepoint_list_title")
+            self.sharepoint_list_id = site.get_list_id(sharepoint_list_title)
+
         if not self.sharepoint_list_id:
             raise Exception("A SharePoint list must be selected")
-        session = Office365Session(access_token=self.auth_token)
-        site = session.get_site(self.sharepoint_site_id)
+
         self.list = site.get_list(self.sharepoint_list_id)
 
     def get_read_schema(self):

@@ -101,6 +101,13 @@ class Office365Session():
             for item in items:
                 yield item
 
+    def get_next_site(self):
+        for site in self.get_next_item(
+                url=self.get_sites_url(),
+                params={"search": "*"}
+        ):
+            yield site
+
     def get_all_items(self, **kwargs):
         items = []
         for item in self.get_next_item(**kwargs):
@@ -124,6 +131,18 @@ class Office365Session():
     def get_site(self, site_id):
         return Office365Site(self, site_id)
 
+    def get_site_id(self, site_name):
+        search_by_web_url = True if "/" in site_name else False
+        for site in self.get_next_site():
+            if search_by_web_url:
+                full_site_path = "/".join(site.get("webUrl").split("/")[3:])
+                if full_site_path == site_name:
+                    return site.get("id")
+            else:
+                if site.get("name") == site_name:
+                    return site.get("id")
+        return None
+
     def get_drive(self, drive_id):
         return Office365Drive(self, drive_id)
 
@@ -137,7 +156,7 @@ class Office365Session():
             request = {
                 "id": "{}".format(counter),
                 "method": request_kwargs.get("method"),
-                "url": get_relative_url("https://graph.microsoft.com/v1.0", request_kwargs.get("url"))
+                "url": self.get_relative_url(request_kwargs.get("url")),
             }
             if request_kwargs.get("headers"):
                 request["headers"] = request_kwargs.get("headers")
@@ -152,7 +171,7 @@ class Office365Session():
         data["requests"] = requests
         response = self.session.request(
             method="POST",
-            url="https://graph.microsoft.com/v1.0/$batch",
+            url=self.get_batch_url(),
             headers={
                 "Accept": "application/json",
                 "Content-Type": "application/json"
@@ -170,6 +189,32 @@ class Office365Session():
             raise Exception("Error {}".format(status_code))
         json_response = response.json()
         return json_response.get("responses", {})
+
+    def get_batch_url(self):
+        return "/".join(
+            [
+                self.get_endpoint_url(),
+                "$batch"
+            ]
+        )
+
+    def get_sites_url(self):
+        return "/".join(
+            [
+                self.get_endpoint_url(),
+                "sites"
+            ]
+        )
+
+    def get_relative_url(self, full_url):
+        url_base = self.get_endpoint_url()
+        relative_url = full_url
+        if full_url.startswith(url_base):
+            relative_url = full_url.replace(url_base, "")
+        return relative_url
+
+    def get_endpoint_url(self):
+        return "https://graph.microsoft.com/v1.0"
 
 
 def get_relative_url(url_base, full_url):

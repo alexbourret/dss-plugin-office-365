@@ -26,49 +26,58 @@ def do(payload, config, plugin_config, inputs):
     auth_token = get_credentials_from_config(config)
     parameter_name = payload.get('parameterName')
     sharepoint_site_id = config.get("sharepoint_site_id")
+    sharepoint_site_overwrite = None
+    if sharepoint_site_id == "dku_manual_select":
+        sharepoint_site_overwrite = config.get("sharepoint_site_overwrite")
+
     search_space = config.get("search_space")
     choices = []
+
     if parameter_name == "sharepoint_site_id":
         session = Office365Session(access_token=auth_token)
-        for sharepoint_site_id in session.get_next_item(
-                url="https://graph.microsoft.com/v1.0/sites",
-                params={"search": "*"}
-        ):
+        for sharepoint_site_id in session.get_next_site():
             choices.append(
                 {
                     "label": sharepoint_site_id.get("displayName"),
                     "value": sharepoint_site_id.get("id")
                 }
             )
+        choices.insert(0, {"label": "✍️ Enter manually", "value": "dku_manual_select"})
 
     if parameter_name == "sharepoint_list_id":
-        if not sharepoint_site_id:
+        if (not sharepoint_site_id) or (sharepoint_site_id == "dku_manual_select" and not sharepoint_site_overwrite):
             return build_select_choices("Select a site")
         session = Office365Session(access_token=auth_token)
-        for sharepoint_list in session.get_next_item(
-            url="https://graph.microsoft.com/v1.0/sites/{}/lists".format(
-                sharepoint_site_id
-            )
-        ):
+        if sharepoint_site_id == "dku_manual_select" and sharepoint_site_overwrite:
+            sharepoint_site_id = session.get_site_id(sharepoint_site_overwrite)
+            if not sharepoint_site_id:
+                return build_select_choices("Site not found")
+        site = session.get_site(sharepoint_site_id)
+        for sharepoint_list in site.get_next_list():
             choices.append(
                 {
                     "label": sharepoint_list.get("displayName"),
                     "value": sharepoint_list.get("id")
                 }
             )
+        choices.insert(0, {"label": "✍️ Enter manually", "value": "dku_manual_select"})
+
     if parameter_name == "sharepoint_drive_id":
-        if search_space == "site" and not sharepoint_site_id:
+        if search_space == "site" and (not sharepoint_site_id or (sharepoint_site_id == "dku_manual_select" and not sharepoint_site_overwrite)):
             return build_select_choices("Select a site")
         session = Office365Session(access_token=auth_token)
-        for sharepoint_list in session.get_next_item(
-            url="https://graph.microsoft.com/v1.0/sites/{}/drives".format(
-                sharepoint_site_id
-            )
-        ):
+        if sharepoint_site_id == "dku_manual_select" and sharepoint_site_overwrite:
+            sharepoint_site_id = session.get_site_id(sharepoint_site_overwrite)
+            if not sharepoint_site_id:
+                return build_select_choices("Site not found")
+        site = session.get_site(sharepoint_site_id)
+        for sharepoint_drive in site.get_next_drive():
             choices.append(
                 {
-                    "label": sharepoint_list.get("name"),
-                    "value": sharepoint_list.get("id")
+                    "label": sharepoint_drive.get("name"),
+                    "value": sharepoint_drive.get("id")
                 }
             )
+        choices.insert(0, {"label": "✍️ Enter manually", "value": "dku_manual_select"})
+
     return build_select_choices(choices)
