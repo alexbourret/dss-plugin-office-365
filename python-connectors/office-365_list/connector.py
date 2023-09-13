@@ -105,7 +105,7 @@ class Office365ListConnector(Connector):
                 description="Created by DSS Office-365 plugin"
             )
         return Office365ListWriter(
-            self.list, dataset_schema, 10
+            self.list, dataset_schema
         )
 
     def get_partitioning(self):

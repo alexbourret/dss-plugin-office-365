@@ -6,16 +6,19 @@ class DSSConstants(object):
     AUTH_SITE_APP = "site-app-permissions"
     CHILDREN = 'children'
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+    DEFAULT_BATCH_SIZE = 900
     DIRECTORY = 'directory'
     EXISTS = 'exists'
     FALLBACK_TYPE = "string"
     FULL_PATH = 'fullPath'
+    GZIP_HEADERS = {
+        "Content-Encoding": "gzip",
+        "Accept-Encoding": "gzip"
+    }
     IS_DIRECTORY = 'isDirectory'
     JSON_HEADERS = {
         "Content-Type": APPLICATION_JSON,
-        "Accept": APPLICATION_JSON,
-        "Content-Encoding": "gzip",
-        "Accept-Encoding": "gzip"
+        "Accept": APPLICATION_JSON
     }
     LAST_MODIFIED = 'lastModified'
     LOGIN_DETAILS = {

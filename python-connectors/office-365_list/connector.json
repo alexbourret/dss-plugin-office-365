@@ -40,7 +40,7 @@
         {
             "name": "sharepoint_site_id",
             "label": "Site",
-            "description": "Select a site",
+            "description": "",
             "type": "SELECT",
             "getChoicesFromPython": true,
             "triggerParameters": ["sharepoint_oauth"]
@@ -55,7 +55,7 @@
         {
             "name": "sharepoint_list_id",
             "label": "List",
-            "description": "Select a list",
+            "description": "",
             "type": "SELECT",
             "visibilityCondition": "model.sharepoint_site_id.length>=0",
             "getChoicesFromPython": true,

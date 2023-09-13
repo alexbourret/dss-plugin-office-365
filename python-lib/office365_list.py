@@ -1,4 +1,5 @@
 from office365_commons import get_sharepoint_type_descriptor
+from dss_constants import DSSConstants
 
 
 class Office365List(object):
@@ -54,22 +55,20 @@ class Office365List(object):
             get_sharepoint_type_descriptor(type)
         )
         url = self.get_column_url()
-        self.session.requests(
+        self.session.request(
             method="POST",
             url=url,
-            headers={"Content-Type": "application/json"},
+            headers=DSSConstants.JSON_HEADERS,
             json=data,
             raise_on={403: "Check that your Azure app has Sites.Manage.All scope enabled"}
         )
 
     def write_row(self, row):
-        headers = {
-            "Content-Type": "application/json"
-        }
+        headers = DSSConstants.JSON_HEADERS
         data = {
             "fields": row,
         }
-        self.session.requests(
+        self.session.request(
             method="POST",
             url=self.get_next_list_row_url(),
             headers=headers,
@@ -77,7 +76,7 @@ class Office365List(object):
         )
 
     def delete_row(self, row_id):
-        self.session.requests(
+        self.session.request(
             method="DELETE",
             url=self.get_list_row_id_url(row_id)
         )
@@ -95,7 +94,7 @@ class Office365List(object):
         return url
 
     def delete_all_rows(self):
-        self.session.start_batch_mode(batch_size=100)
+        self.session.start_batch_mode()
         for row in self.get_next_row():
             row_id = row.get("id")
             self.delete_row(row_id)

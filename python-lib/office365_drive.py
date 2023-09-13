@@ -1,4 +1,6 @@
 from office365_commons import assert_response_ok
+from sharepoint_constants import SharePointConstants
+from dss_constants import DSSConstants
 
 
 class Office365Drive(object):
@@ -24,7 +26,7 @@ class Office365Drive(object):
             yield item
 
     def delete_item_by_id(self, item_id):
-        self.session.requests(
+        self.session.request(
             method="DELETE",
             url=self.get_item_by_id_url(item_id)
         )
@@ -45,11 +47,8 @@ class Office365Drive(object):
             "name": file_name
         }
         url = self.get_item_by_id_url(item_from_id)
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        }
-        response = self.session.requests(
+        headers = DSSConstants.JSON_HEADERS
+        response = self.session.request(
             method="PATCH",
             url=url,
             headers=headers,
@@ -59,7 +58,7 @@ class Office365Drive(object):
         return json_response
 
     def create_empty_item(self, parent_id, path):
-        response = self.session.requests(
+        response = self.session.request(
             method="PUT",
             url=self.get_content_url(parent_id, path)
         )
@@ -67,26 +66,27 @@ class Office365Drive(object):
         return json_response
 
     def create_upload_session(self, item_id):
-        response = self.session.requests(
+        response = self.session.request(
             method="POST",
             url=self.get_create_upload_session_url(item_id)
         )
         json_response = response.json()
         return json_response
 
-    def write_chunked_file_content(self, upload_url, data, chunk_size=131072000):
+    def write_chunked_file_content(self, upload_url, data, chunk_size=SharePointConstants.FILE_UPLOAD_CHUNK_SIZE):
         file_size = len(data)
         save_upload_offset = 0
         while save_upload_offset < file_size:
             next_save_upload_offset = save_upload_offset + chunk_size
             if next_save_upload_offset > file_size:
                 next_save_upload_offset = file_size
-            headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Content-Range": "bytes {}-{}/{}".format(save_upload_offset, next_save_upload_offset-1, file_size)
-            }
-            response = self.session.requests(
+            headers = DSSConstants.JSON_HEADERS
+            headers.update(
+                {
+                    "Content-Range": "bytes {}-{}/{}".format(save_upload_offset, next_save_upload_offset-1, file_size)
+                }
+            )
+            response = self.session.request(
                 method="PUT",
                 url=upload_url,
                 headers=headers,

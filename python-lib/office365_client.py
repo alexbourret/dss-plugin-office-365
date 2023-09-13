@@ -4,6 +4,7 @@ from office365_site import Office365Site
 from office365_drive import Office365Drive
 from office365_auth import Office365Auth
 from office365_commons import get_next_page_url, get_error, prepare_row
+from dss_constants import DSSConstants
 
 
 logger = SafeLogger("office-365 plugin", [])
@@ -17,7 +18,7 @@ class Office365Session():
         self.requests_buffer = []
         self.batch_size = 0
 
-    def requests(self, **kwargs):
+    def request(self, **kwargs):
         raise_on = kwargs.pop("raise_on", {})
         cannot_raise = kwargs.pop("cannot_raise", False)
         force_no_batch = kwargs.pop("force_no_batch", False)
@@ -41,29 +42,20 @@ class Office365Session():
 
     def get(self, **kwargs):
         kwargs["method"] = "GET"
-        response = self.requests(**kwargs)
+        response = self.request(**kwargs)
         error_message = get_error(response)
         if error_message and not kwargs.get("cannot_raise"):
             raise Exception(error_message)
         return response
 
     def get_headers(self):
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        }
+        headers = DSSConstants.JSON_HEADERS
         return headers
 
     def get_item(self, **kwargs):
         kwargs["headers"] = kwargs.get("headers", {})
-        kwargs["headers"].update(
-            {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Content-Encoding": "gzip",
-                "Accept-Encoding": "gzip"
-            }
-        )
+        kwargs["headers"].update(DSSConstants.JSON_HEADERS)
+        kwargs["headers"].update(DSSConstants.GZIP_HEADERS)
         kwargs["cannot_raise"] = True
         response = self.get(
             **kwargs
@@ -76,14 +68,8 @@ class Office365Session():
 
     def get_next_item(self, **kwargs):
         kwargs["headers"] = kwargs.get("headers", {})
-        kwargs["headers"].update(
-            {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Content-Encoding": "gzip",
-                "Accept-Encoding": "gzip"
-            }
-        )
+        kwargs["headers"].update(DSSConstants.JSON_HEADERS)
+        kwargs["headers"].update(DSSConstants.GZIP_HEADERS)
         is_first_get = True
         next_page_url = None
         while next_page_url or is_first_get:
@@ -114,7 +100,8 @@ class Office365Session():
             items.append(item)
         return items
 
-    def start_batch_mode(self, batch_size):
+    def start_batch_mode(self, batch_size=None):
+        batch_size = batch_size or DSSConstants.DEFAULT_BATCH_SIZE
         self.is_batch_mode = True
         self.batch_size = batch_size
         self.requests_buffer = []
@@ -172,10 +159,7 @@ class Office365Session():
         response = self.session.request(
             method="POST",
             url=self.get_batch_url(),
-            headers={
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
+            headers=DSSConstants.JSON_HEADERS,
             json=data
         )
         status_code = response.status_code
@@ -186,6 +170,7 @@ class Office365Session():
                 error_message += ". {}".format(json_response.get("error").get("message"))
             except Exception as sub_error_message:
                 logger.debug("Could not enrich error message {}".format(sub_error_message))
+            logger.error("Error {}, dumping content: {}".format(status_code, response.content))
             raise Exception("Error {}".format(status_code))
         json_response = response.json()
         return json_response.get("responses", {})
@@ -237,7 +222,7 @@ def assert_responses_ok(responses):
 
 
 class Office365ListWriter(object):
-    def __init__(self, list, dataset_schema, batch_size):
+    def __init__(self, list, dataset_schema, batch_size=None):
         self.list = list
         self.list.session.start_batch_mode(batch_size=batch_size)
         self.columns = dataset_schema.get("columns")

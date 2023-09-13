@@ -66,8 +66,8 @@
         },
         {
             "name": "sharepoint_site_id",
-            "label": " ",
-            "description": "Select a site",
+            "label": "Site",
+            "description": "",
             "type": "SELECT",
             "visibilityCondition": "model.search_space=='site'",
             "getChoicesFromPython": true,
@@ -82,8 +82,8 @@
         },
         {
             "name": "sharepoint_drive_id",
-            "label": " ",
-            "description": "Select a drive",
+            "label": "Drive",
+            "description": "",
             "type": "SELECT",
             "visibilityCondition": "model.sharepoint_site_id.length>=0",
             "getChoicesFromPython": true,
