@@ -1,0 +1,45 @@
+{
+    "meta" : {
+        "label": "Access Office 365 messages",
+        "description": "",
+        "icon": "icon-cloud"
+    },
+    "readable": true,
+    "writable": false,
+    "kind": "PYTHON",
+    "params": [
+        {
+            "name": "auth_type",
+            "label": "Type of authentication",
+            "type": "SELECT",
+            "selectChoices": [
+                {
+                    "value": "login",
+                    "label": "User name / password"
+                },
+                {
+                    "value": "oauth",
+                    "label": "Azure Single Sign On"
+                },
+                {
+                    "value": "site-app-permissions",
+                    "label": "Site App Permissions"
+                }
+            ],
+            "defaultValue": "oauth",
+            "visibilityCondition": false
+        },
+        {
+            "name": "sharepoint_oauth",
+            "label": "Azure preset",
+            "type": "PRESET",
+            "parameterSetId": "ms-graph-sso",
+            "visibilityCondition": "model.auth_type == 'oauth'"
+        },
+        {
+            "name": "user_principal_name",
+            "label": "User principal name",
+            "type": "STRING"
+        }
+    ]
+}

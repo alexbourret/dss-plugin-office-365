@@ -2,6 +2,7 @@ import requests
 from safe_logger import SafeLogger
 from office365_site import Office365Site
 from office365_drive import Office365Drive
+from office365_messages import Office365Messages
 from office365_auth import Office365Auth
 from office365_commons import get_next_page_url, get_error, prepare_row
 from dss_constants import DSSConstants
@@ -117,6 +118,9 @@ class Office365Session():
 
     def get_site(self, site_id):
         return Office365Site(self, site_id)
+
+    def get_messages(self):
+        return Office365Messages(self)
 
     def get_site_id(self, site_name):
         search_by_web_url = True if "/" in site_name else False
