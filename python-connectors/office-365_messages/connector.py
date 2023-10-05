@@ -18,10 +18,12 @@ class Office365MessagesConnector(Connector):
 
         self.auth_token = get_credentials_from_config(config)
         self.user_principal_name = config.get("user_principal_name")
+        self.folder_id = config.get("folder_id")
+        search_space = config.get("search_space", "user")
         if not self.user_principal_name:
             raise Exception("A user principal name must be selected")
         session = Office365Session(access_token=self.auth_token)
-        self.messages = session.get_messages()
+        self.messages = session.get_messages(search_space=search_space)
 
     def get_read_schema(self):
         """
@@ -50,7 +52,7 @@ class Office365MessagesConnector(Connector):
     def generate_rows(self, dataset_schema=None, dataset_partitioning=None,
                       partition_id=None, records_limit=-1):
         limit = RecordsLimit(records_limit=records_limit)
-        for message in self.messages.get_next_message(self.user_principal_name):
+        for message in self.messages.get_next_message(user_principal_name=self.user_principal_name, folder_id=self.folder_id):
             yield message
             if limit.is_reached():
                 return

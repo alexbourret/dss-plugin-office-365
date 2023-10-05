@@ -119,8 +119,8 @@ class Office365Session():
     def get_site(self, site_id):
         return Office365Site(self, site_id)
 
-    def get_messages(self):
-        return Office365Messages(self)
+    def get_messages(self, search_space=None):
+        return Office365Messages(self, search_space=search_space)
 
     def get_site_id(self, site_name):
         search_by_web_url = True if "/" in site_name else False

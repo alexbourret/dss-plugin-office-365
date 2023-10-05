@@ -37,9 +37,41 @@
             "visibilityCondition": "model.auth_type == 'oauth'"
         },
         {
+            "name": "search_space",
+            "label": "Searching for",
+            "type": "SELECT",
+            "selectChoices": [
+                {
+                    "value": "me",
+                    "label": "Your messages"
+                },
+                {
+                    "value": "user",
+                    "label": "A user's messages"
+                },
+                {
+                    "value": "folder",
+                    "label": "A mail folder's messages"
+                },
+                {
+                    "value": "user-folder",
+                    "label": "Another user's mail folder"
+                }
+            ],
+            "defaultValue": "user",
+            "visibilityCondition": true
+        },
+        {
             "name": "user_principal_name",
             "label": "User principal name",
-            "type": "STRING"
+            "type": "STRING",
+            "visibilityCondition": "['user', 'user-folder'].indexOf(model.search_space) >= 0"
+        },
+        {
+            "name": "folder_id",
+            "label": "Folder ID",
+            "type": "STRING",
+            "visibilityCondition": "['user-folder', 'folder'].indexOf(model.search_space) >= 0"
         }
     ]
 }
