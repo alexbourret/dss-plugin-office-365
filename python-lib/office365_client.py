@@ -95,6 +95,21 @@ class Office365Session():
         ):
             yield site
 
+    def get_my_tasks(self):
+        # https://graph.microsoft.com/v1.0/me/planner/tasks
+        for task in self.get_next_item(url=self.get_endpoint_url_for("me/planner/tasks")):
+            yield task
+
+    def get_next_task(self, plan_id):
+        for task in self.get_next_item(url=self.get_endpoint_url_for("planner/plans/{}/tasks".format(plan_id))):
+            yield task
+
+    def get_next_plan(self, group_id):
+        for plan in self.get_next_item(
+            url=self.get_endpoint_url_for("/groups/{}/planner/plans".format(group_id))
+        ):
+            yield plan
+
     def get_all_items(self, **kwargs):
         items = []
         for item in self.get_next_item(**kwargs):
@@ -204,6 +219,14 @@ class Office365Session():
 
     def get_endpoint_url(self):
         return "https://graph.microsoft.com/v1.0"
+
+    def get_endpoint_url_for(self, root_path):
+        return "/".join(
+            [
+                self.get_endpoint_url(),
+                root_path
+            ]
+        )
 
 
 def get_relative_url(url_base, full_url):

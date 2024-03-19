@@ -1,0 +1,54 @@
+{
+    "meta" : {
+        "label": "View Planner tasks",
+        "description": "",
+        "icon": "icon-tasks"
+    },
+    "readable": true,
+    "writable": false,
+    "kind": "PYTHON",
+    "paramsPythonSetup": "browse_sp_lists.py",
+    "params": [
+        {
+            "name": "auth_type",
+            "label": "Type of authentication",
+            "type": "SELECT",
+            "selectChoices": [
+                {
+                    "value": "login",
+                    "label": "User name / password"
+                },
+                {
+                    "value": "oauth",
+                    "label": "Azure Single Sign On"
+                },
+                {
+                    "value": "site-app-permissions",
+                    "label": "Site App Permissions"
+                }
+            ],
+            "defaultValue": "oauth",
+            "visibilityCondition": false
+        },
+        {
+            "name": "sharepoint_oauth",
+            "label": "Azure preset",
+            "type": "PRESET",
+            "parameterSetId": "ms-graph-sso",
+            "visibilityCondition": "model.auth_type == 'oauth'"
+        },
+        {
+            "name": "group_id",
+            "label": "Group ID",
+            "description": "See documentation",
+            "type": "STRING"
+        },
+        {
+            "name": "plan_id",
+            "label": "Plans",
+            "type": "SELECT",
+            "getChoicesFromPython": true,
+            "visibilityCondition": "model.group_id.length>0"
+        }
+    ]
+}

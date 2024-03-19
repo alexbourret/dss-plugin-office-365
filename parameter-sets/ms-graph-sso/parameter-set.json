@@ -16,7 +16,7 @@
                 "type": "OAUTH2",
                 "authorizationEndpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
                 "tokenEndpoint": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
-                "scope": "offline_access User.Read Files.ReadWrite.All Sites.ReadWrite.All Sites.Manage.All"
+                "scope": "offline_access User.Read Files.ReadWrite.All Sites.ReadWrite.All Sites.Manage.All Tasks.Read.Shared"
             },
             "mandatory": true
         },
