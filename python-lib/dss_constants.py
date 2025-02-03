@@ -6,7 +6,7 @@ class DSSConstants(object):
     AUTH_SITE_APP = "site-app-permissions"
     CHILDREN = 'children'
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-    DEFAULT_BATCH_SIZE = 900
+    DEFAULT_BATCH_SIZE = 19
     DIRECTORY = 'directory'
     EXISTS = 'exists'
     FALLBACK_TYPE = "string"

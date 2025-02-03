@@ -14,6 +14,23 @@ class Office365Drive(object):
         )
         return item
 
+    def get_permission_list(self, item_id):
+        url = self.get_item_by_id_url(item_id) + "/permissions"
+        list = self.session.get_item(
+            url=url
+        )
+        return list
+
+    def get_group(self, group_id):
+        # This requires Group.Read.All scope which requires admin consent
+        url = "/".join([
+            self.session.get_endpoint_url(),
+            "groups",
+            group_id
+        ])
+        group = self.session.get_item(url=url)
+        return group
+
     def get_next_child(self, folder_path):
         url = self.get_children_url(folder_path)
         for child in self.session.get_next_item(url=url):
