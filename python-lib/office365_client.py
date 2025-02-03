@@ -1,10 +1,11 @@
 import requests
+import time
 from safe_logger import SafeLogger
 from office365_site import Office365Site
 from office365_drive import Office365Drive
 from office365_messages import Office365Messages
 from office365_auth import Office365Auth
-from office365_commons import get_next_page_url, get_error, prepare_row
+from office365_commons import get_next_page_url, get_error, prepare_row, is_throttling, get_retry_after_value
 from dss_constants import DSSConstants
 
 
@@ -30,7 +31,17 @@ class Office365Session():
                 self.flush()
             return
 
-        response = self.session.request(**kwargs)
+        should_retry = True
+        while should_retry:
+            should_retry = False
+            response = self.session.request(**kwargs)
+            if is_throttling(response):
+                retry_after = get_retry_after_value(response)
+                if retry_after:
+                    logger.warning("SharePoint is throttling... Sleeping for {} seconds".format(retry_after))
+                    time.sleep(retry_after)
+                    should_retry = True
+                    logger.warning("Retrying")
         error_message = get_error(response)
         if raise_on:
             status_code = response.status_code
@@ -237,14 +248,19 @@ def get_relative_url(url_base, full_url):
 
 
 def assert_responses_ok(responses):
+    max_retry_after = 0
     for response in responses:
         if int(response.get("status", 200)) >= 400:
             logger.error("Error during batch, dumping responses: {}".format(responses))
-            raise Exception("Batch id {} failed with error {}. {}".format(
+            raise Exception("Batch id {} failed with error {}. {} / {}".format(
                 response.get("id"),
                 response.get("status"),
-                response.get("body")
+                response.get("body"),
+                response.get("header")
             ))
+        retry_after = response.get("header", {}).get("Retry-After", 0)
+        if retry_after > max_retry_after:
+            max_retry_after = retry_after
     return True
 
 

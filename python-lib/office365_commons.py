@@ -101,6 +101,17 @@ def get_error(response):
     return error_message
 
 
+def is_throttling(response):
+    return response.status_code == 429
+
+
+def get_retry_after_value(response):
+    retry_after_value = response.headers.get("Retry-After")
+    if retry_after_value:
+        return int(retry_after_value)
+    return 30
+
+
 def prepare_row(row, columns):
     prepared_row = {}
     for item, column in zip(row, columns):

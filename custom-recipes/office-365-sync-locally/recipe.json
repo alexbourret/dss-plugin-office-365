@@ -1,0 +1,129 @@
+{
+    "meta": {
+        "label": "Sync locally",
+        "description": "Download and keep up to date a SharePoint folder and produce its access right dataset",
+        "icon": "icon-cloud"
+    },
+
+    "kind": "PYTHON",
+    "paramsPythonSetup": "browse_sp_lists.py",
+    "inputRoles": [
+    ],
+    "outputRoles": [
+        {
+            "name": "file_security",
+            "label": "File security",
+            "description": "Access rights for each synched file",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsDataset": true
+        },
+        {
+            "name": "files_folder",
+            "label": "Folder for synched files",
+            "description": "",
+            "arity": "UNARY",
+            "required": false,
+            "acceptsManagedFolder": true
+        }
+    ],
+    "params": [
+        {
+            "name": "auth_type",
+            "label": "Type of authentication",
+            "type": "SELECT",
+            "selectChoices": [
+                {
+                    "value": "login",
+                    "label": "User name / password"
+                },
+                {
+                    "value": "oauth",
+                    "label": "Azure Single Sign On"
+                },
+                {
+                    "value": "site-app-permissions",
+                    "label": "Site App Permissions"
+                }
+            ],
+            "defaultValue": "oauth",
+            "visibilityCondition": false
+        },
+        {
+            "name": "sharepoint_oauth",
+            "label": "Azure preset",
+            "type": "PRESET",
+            "parameterSetId": "ms-graph-sso",
+            "visibilityCondition": "model.auth_type == 'oauth'"
+        },
+        {
+            "name": "search_space",
+            "label": "Searching for",
+            "type": "SELECT",
+            "selectChoices": [
+                {
+                    "value": "user",
+                    "label": "Your files"
+                },
+                {
+                    "value": "other-user",
+                    "label": "A user's files"
+                },
+                {
+                    "value": "site",
+                    "label": "Site's files"
+                },
+                {
+                    "value": "group",
+                    "label": "Group's files"
+                },
+                {
+                    "value": "shared",
+                    "label": "Files shared with me"
+                }
+            ],
+            "defaultValue": "site",
+            "visibilityCondition": false
+        },
+        {
+            "name": "sharepoint_site_id",
+            "label": "Site",
+            "description": "",
+            "type": "SELECT",
+            "visibilityCondition": "model.search_space=='site'",
+            "getChoicesFromPython": true,
+            "triggerParameters": ["search_space", "sharepoint_oauth"]
+        },
+        {
+            "name": "sharepoint_site_overwrite",
+            "label": "Site name",
+            "description": "",
+            "type": "STRING",
+            "visibilityCondition": "model.sharepoint_site_id=='dku_manual_select'"
+        },
+        {
+            "name": "sharepoint_drive_id",
+            "label": "Drive",
+            "description": "",
+            "type": "SELECT",
+            "visibilityCondition": "model.sharepoint_site_id.length>=0",
+            "getChoicesFromPython": true,
+            "triggerParameters": ["sharepoint_site_id", "sharepoint_site_overwrite"]
+        },
+        {
+            "name": "sharepoint_root_overwrite",
+            "label": "List name",
+            "description": "",
+            "type": "STRING",
+            "visibilityCondition": "model.sharepoint_drive_id=='dku_manual_select'"
+        },
+        {
+            "name": "sharepoint_path",
+            "label": "Path",
+            "description": "",
+            "type": "STRING"
+        }
+    ],
+    "resourceKeys": []
+
+}
