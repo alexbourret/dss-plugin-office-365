@@ -16,7 +16,7 @@
 - Check that **Site** now
     - indicates *- Nothing selected -*
     - contains a list of accessible sites
-- Select the *✍️ Enter manually* option
+- Select the "*✍️ Enter manually*" option
 - In the **Site name** box, paste the full URL of the site you want to access. For instance `https://my-corp.sharepoint.com/sites/mysite` or `https://my-corp.sharepoint.com/sites/mysite/Shared%20Documents/Forms/AllItems.aspx`. Note that for this test to be conclusive, **this site should not be visible using the usual native connection**. 
 - Check that the **List** selector is now filled in all the lists available on the selected site.
 
@@ -29,7 +29,7 @@
 - Check that **Site** now
     - indicates *- Nothing selected -*
     - contains a list of accessible sites
-- Select the *✍️ Enter manually* option
+- Select the "*✍️ Enter manually*" option
 - In the **Site name** box, paste the full URL of the site you want to access. For instance `https://my-corp.sharepoint.com/sites/mysite` or `https://my-corp.sharepoint.com/sites/mysite/Shared%20Documents/Forms/AllItems.aspx`. Note that for this test to be conclusive, **this site should not be visible using the usual native connection**. 
 - Check that the **Drive** selector is now filled in all the drives available on the selected site.
 
