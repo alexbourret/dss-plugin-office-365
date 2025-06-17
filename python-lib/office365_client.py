@@ -149,6 +149,9 @@ class Office365Session():
         return Office365Messages(self, search_space=search_space)
 
     def get_site_id(self, site_name):
+        site_id = self.get_site_id_from_url(site_name)
+        if site_id:
+            return site_id
         search_by_web_url = True if "/" in site_name else False
         for site in self.get_next_site():
             if search_by_web_url:
@@ -159,6 +162,18 @@ class Office365Session():
                 if site.get("name") == site_name:
                     return site.get("id")
         return None
+
+    def get_site_by_path(self, host_name, site_path):
+        # host_name "ikuiku.sharepoint.com",
+        # site_path "sites/GRP-DATASCIENCEPLATFORM"
+        # From https://stackoverflow.com/questions/28328890/python-requests-extract-url-parameters-from-a-string
+        # call https://graph.microsoft.com/v1.0/sites/{hostname}:/sites/{path}?$select=id
+        url = "https://graph.microsoft.com/v1.0/sites/{}:/{}".format(
+            host_name,
+            site_path
+        )
+        response = self.get_item(url=url)
+        return response.get("id")
 
     def get_drive(self, drive_id):
         return Office365Drive(self, drive_id)
@@ -238,6 +253,22 @@ class Office365Session():
                 root_path
             ]
         )
+
+    def get_site_id_from_url(self, url):
+        from urllib.parse import urlparse
+        #  https://ikuiku.sharepoint.com/sites/dssplugin/subsitetest/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2Fdssplugin%2Fsubsitetest%2FShared%20Documents%2FSubSiteDir&viewid=e2eb8d34%2Db32c%2D482d%2D8ce4%2Df03ed1d2d84e&as=json
+        #          <--      host     --> <--                       path                                 -->
+        logger.info("searching site from url {}".format(url))
+        url_parser = urlparse(url)
+        host_name = url_parser.hostname
+        path = url_parser.path
+        path_tokens = path.strip("/").split("/")
+        if path_tokens[-1:][0].lower() == "allitems.aspx":
+            site_name = "/".join(path_tokens[:-3])
+        else:
+            site_name = "/".join(path_tokens[:])
+        site_id = self.get_site_by_path(host_name, site_name)
+        return site_id
 
 
 def get_relative_url(url_base, full_url):

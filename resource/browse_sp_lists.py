@@ -4,11 +4,11 @@ from office365_client import Office365Session
 
 def do(payload, config, plugin_config, inputs):
     choices = DSSSelectorChoices()
-    sharepoint_oauth = config.get("sharepoint_oauth")
-    if not sharepoint_oauth:
-        return choices.text_message("⚠ Select a preset")
 
     auth_token = get_credentials_from_config(config)
+    if not auth_token:
+        return choices.text_message("⚠ Select a valid preset")
+
     parameter_name = payload.get('parameterName')
     sharepoint_site_id = config.get("sharepoint_site_id")
     sharepoint_site_overwrite = None
@@ -19,9 +19,9 @@ def do(payload, config, plugin_config, inputs):
 
     if parameter_name == "sharepoint_site_id":
         session = Office365Session(access_token=auth_token)
+        choices.append_manual_select()
         for sharepoint_site_id in session.get_next_site():
             choices.append(sharepoint_site_id.get("displayName"), sharepoint_site_id.get("id"))
-        choices.append_manual_select()
 
     if parameter_name == "sharepoint_list_id":
         if (not sharepoint_site_id) or (sharepoint_site_id == "dku_manual_select" and not sharepoint_site_overwrite):

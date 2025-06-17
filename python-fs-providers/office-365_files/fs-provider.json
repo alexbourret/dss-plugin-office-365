@@ -23,10 +23,14 @@
                 {
                     "value": "site-app-permissions",
                     "label": "Site App Permissions"
+                },
+                {
+                    "value": "dss-connection",
+                    "label": "DSS connection"
                 }
             ],
             "defaultValue": "oauth",
-            "visibilityCondition": false
+            "visibilityCondition": true
         },
         {
             "name": "sharepoint_oauth",
@@ -34,6 +38,12 @@
             "type": "PRESET",
             "parameterSetId": "ms-graph-sso",
             "visibilityCondition": "model.auth_type == 'oauth'"
+        },
+        {
+            "name": "dss_connection",
+            "label": "DSS connection",
+            "type": "CONNECTION",
+            "visibilityCondition": "model.auth_type == 'dss-connection'"
         },
         {
             "name": "search_space",
@@ -71,7 +81,7 @@
             "type": "SELECT",
             "visibilityCondition": "model.search_space=='site'",
             "getChoicesFromPython": true,
-            "triggerParameters": ["search_space", "sharepoint_oauth"]
+            "triggerParameters": ["search_space", "sharepoint_oauth", "dss_connection"]
         },
         {
             "name": "sharepoint_site_overwrite",

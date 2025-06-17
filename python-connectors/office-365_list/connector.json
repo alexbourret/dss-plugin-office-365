@@ -25,10 +25,14 @@
                 {
                     "value": "site-app-permissions",
                     "label": "Site App Permissions"
+                },
+                {
+                    "value": "dss-connection",
+                    "label": "DSS connection"
                 }
             ],
             "defaultValue": "oauth",
-            "visibilityCondition": false
+            "visibilityCondition": true
         },
         {
             "name": "sharepoint_oauth",
@@ -38,12 +42,18 @@
             "visibilityCondition": "model.auth_type == 'oauth'"
         },
         {
+            "name": "dss_connection",
+            "label": "DSS connection",
+            "type": "CONNECTION",
+            "visibilityCondition": "model.auth_type == 'dss-connection'"
+        },
+        {
             "name": "sharepoint_site_id",
             "label": "Site",
             "description": "",
             "type": "SELECT",
             "getChoicesFromPython": true,
-            "triggerParameters": ["sharepoint_oauth"]
+            "triggerParameters": ["sharepoint_oauth", "dss_connection"]
         },
         {
             "name": "sharepoint_site_overwrite",

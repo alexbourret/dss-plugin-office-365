@@ -20,6 +20,18 @@ class RecordsLimit():
 
 
 def get_credentials_from_config(config):
+    # {'auth_type': 'dss-connection', 'sharepoint_oauth': {}, 'dss_connection': 'Ikuiku_SSO'}
+    auth_type = config.get("auth_type")
+    if auth_type == "dss-connection":
+        dss_connection_name = config.get("dss_connection")
+        import dataiku
+        client = dataiku.api_client()
+        connection = client.get_connection(dss_connection_name)
+        connection_info = connection.get_info()
+        credentials = connection_info.get_oauth2_credential()
+        sharepoint_access_token = credentials.get("accessToken")
+        return sharepoint_access_token
+
     auth_token = config.get("sharepoint_oauth", {}).get("sharepoint_oauth")
     return auth_token
 
