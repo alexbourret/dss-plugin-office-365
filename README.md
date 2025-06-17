@@ -35,4 +35,4 @@
 
 # Note
 
-This is a test plugin. It is functionnal but not reviewed, so it is not advise to use it in production.
+This is a test plugin. It is functionnal but not reviewed, so it is not advise to use it on production flows.
