@@ -75,6 +75,9 @@ class Office365Session():
         status_code = response.status_code
         if status_code == 404:
             return {}
+        if status_code >= 400:
+            logger.error("Error ! Status code: {}".format(status_code))
+            logger.info("response dump: {}".format(response.content))
         json_response = response.json()
         return json_response
 
@@ -172,6 +175,7 @@ class Office365Session():
             host_name,
             site_path
         )
+        logger.info("get_site_by_path:url={}".format(url))
         response = self.get_item(url=url)
         return response.get("id")
 
