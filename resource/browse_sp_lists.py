@@ -1,8 +1,17 @@
 from office365_commons import get_credentials_from_config, DSSSelectorChoices
 from office365_client import Office365Session
+from safe_logger import SafeLogger
+from dss_constants import DSSConstants
+
+logger = SafeLogger("office-365 plugin browser", DSSConstants.SECRET_PARAMETERS_KEYS)
 
 
 def do(payload, config, plugin_config, inputs):
+    logger.info("Starting do call with config={} and payload:{}".format(
+            logger.filter_secrets(config),
+            logger.filter_secrets(payload),
+        )
+    )
     choices = DSSSelectorChoices()
 
     auth_token = get_credentials_from_config(config)
@@ -20,8 +29,8 @@ def do(payload, config, plugin_config, inputs):
     if parameter_name == "sharepoint_site_id":
         session = Office365Session(access_token=auth_token)
         choices.append_manual_select()
-        for sharepoint_site_id in session.get_next_site():
-            choices.append(sharepoint_site_id.get("displayName"), sharepoint_site_id.get("id"))
+        # for sharepoint_site_id in session.get_next_site():
+        #     choices.append(sharepoint_site_id.get("displayName"), sharepoint_site_id.get("id"))
 
     if parameter_name == "sharepoint_list_id":
         if (not sharepoint_site_id) or (sharepoint_site_id == "dku_manual_select" and not sharepoint_site_overwrite):
