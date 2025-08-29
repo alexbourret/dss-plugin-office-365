@@ -20,7 +20,7 @@ class RecordsLimit():
 
 
 def get_credentials_from_config(config):
-    # {'auth_type': 'dss-connection', 'sharepoint_oauth': {}, 'dss_connection': 'Ikuiku_SSO'}
+    # std: {'auth_type': 'dss-connection', 'sharepoint_oauth': {}, 'dss_connection': 'Ikuiku_SSO'}
     auth_type = config.get("auth_type")
     if auth_type == "dss-connection":
         dss_connection_name = config.get("dss_connection")
@@ -28,12 +28,60 @@ def get_credentials_from_config(config):
         client = dataiku.api_client()
         connection = client.get_connection(dss_connection_name)
         connection_info = connection.get_info()
-        credentials = connection_info.get_oauth2_credential()
-        sharepoint_access_token = credentials.get("accessToken")
+        connection_type = connection_info.get("params", {}).get("authType")
+        if connection_type == "KEYPAIR":
+            credentials = get_credentials_from_keypair(connection_info)
+            sharepoint_access_token = credentials.get("access_token")
+        else:
+            credentials = connection_info.get_oauth2_credential()
+            sharepoint_access_token = credentials.get("accessToken")  # OMG !
         return sharepoint_access_token
-
     auth_token = config.get("sharepoint_oauth", {}).get("sharepoint_oauth")
     return auth_token
+
+
+def get_credentials_from_keypair(connection_info):
+    # https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow#second-case-access-token-request-with-a-certificate
+    params = connection_info.get("params", {})
+    private_key = params.get("privateKey")
+    client_id = params.get("appId")
+    tenant_id = params.get("tenantId")
+    thumbprint = params.get("thumbprint")
+    scopes = params.get("scopes")
+
+    import msal
+    logger.info("geting credentials from keypair")
+    app = msal.ConfidentialClientApplication(
+        client_id,
+        authority="https://login.microsoftonline.com/{}".format(tenant_id),
+        client_credential={
+            "thumbprint": thumbprint,
+            "private_key": format_private_key(private_key),
+            # "passphrase": self.passphrase,
+        },
+    )
+    logger.info("acquiring token")
+    json_response = app.acquire_token_for_client(scopes=[scopes])
+    return json_response
+
+
+def format_private_key(private_key):
+    CLEAR_KEY_END = "-----END PRIVATE KEY-----"
+    CLEAR_KEY_START = "-----BEGIN PRIVATE KEY-----"
+    ENCRYPTED_KEY_END = "-----END ENCRYPTED PRIVATE KEY-----"
+    ENCRYPTED_KEY_START = "-----BEGIN ENCRYPTED PRIVATE KEY-----"
+    """Formats the private key as the secret parameter replaces newlines with spaces."""
+    private_key = private_key.strip(" ")
+    if private_key.startswith(CLEAR_KEY_START):
+        start_marker = CLEAR_KEY_START
+        end_marker = CLEAR_KEY_END
+    else:
+        start_marker = ENCRYPTED_KEY_START
+        end_marker = ENCRYPTED_KEY_END
+    private_key = private_key.replace(start_marker, "")
+    private_key = private_key.replace(end_marker, "")
+    private_key = "\n".join([start_marker, *private_key.split(), end_marker])
+    return private_key
 
 
 def format_date(date):
