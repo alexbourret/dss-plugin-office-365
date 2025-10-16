@@ -173,26 +173,3 @@ def compute_missing_sharepoint_columns(dss_columns, sharepoint_columns):
                 }
             )
     return missing_sharepoint_columns
-
-
-# class LookupList():
-#     def __init__(self, must_see_columns=[]):
-#         self.list = []
-#         self.columns_to_lookup = []
-#         self.columns_to_select = []
-#         self.must_see_columns = must_see_columns
-
-#     def append(self, column):
-#         if not isinstance(column, dict):
-#             return
-#         name = column.get("name")
-#         if 'lookup' in column:
-#             self.columns_to_lookup.append("fields/{}".format(name))
-#         if column.get("readOnly") is False or name in self.must_see_columns:
-#             self.columns_to_select.append(name)
-
-#     def get_fields(self):
-#         return "fields," + ",".join(self.columns_to_lookup)
-
-#     def get_select(self):
-#         return ",".join(self.columns_to_select)
