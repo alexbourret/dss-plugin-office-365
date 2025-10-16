@@ -77,6 +77,29 @@
             "description": "",
             "type": "STRING",
             "visibilityCondition": "model.sharepoint_list_id=='dku_manual_select'"
+        },
+        {
+            "name": "must_see_columns",
+            "label": "Metadata columns",
+            "type": "MULTISELECT",
+            "selectChoices": [
+                {
+                    "value": "Modified",
+                    "label": "Modified"
+                },
+                {
+                    "value": "Created",
+                    "label": "Created"
+                },
+                {
+                    "value": "Author",
+                    "label": "Created By"
+                },
+                {
+                    "value": "Editor",
+                    "label": "Modified By"
+                }
+            ]
         }
     ]
 }
