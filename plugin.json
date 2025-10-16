@@ -6,6 +6,7 @@
         "description": "For test only",
         "author": "Dataiku (Alex Bourret)",
         "icon": "icon-cloud",
+        "category": "Connect",
         "tags": [
             "Prototype",
             "Connector",
