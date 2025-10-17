@@ -1,5 +1,5 @@
 from dataiku.connector import Connector
-from office365_commons import RecordsLimit, get_credentials_from_config
+from office365_commons import RecordsLimit, get_credentials_from_config, LookupList
 from office365_client import Office365Session, Office365ListWriter
 from safe_logger import SafeLogger
 from dss_constants import DSSConstants
@@ -37,6 +37,7 @@ class Office365ListConnector(Connector):
             raise Exception("A SharePoint list must be selected")
 
         self.list = site.get_list(self.sharepoint_list_id)
+        self.must_see_columns = config.get("must_see_columns", [])
 
     def get_read_schema(self):
         """
@@ -66,14 +67,21 @@ class Office365ListConnector(Connector):
                       partition_id=None, records_limit=-1):
         limit = RecordsLimit(records_limit)
         column_display_name = {}
+        lookup_list = LookupList(must_see_columns=self.must_see_columns)
         for column in self.list.get_columns():
             column_display_name[column.get("name")] = column.get("displayName")
-
-        for row in self.list.get_next_row():
+            lookup_list.append(column)
+        # Special case for the id column, because, why not...
+        column_display_name["id"] = "ID"
+        for row in self.list.get_next_row(
+            select_list=lookup_list.get_select(),
+        ):
             fields = row.get("fields", {})
             row_with_real_names = {}
             for name in fields:
-                row_with_real_names[column_display_name.get(name, name)] = fields.get(name)
+                selected_column_display_name = column_display_name.get(name)
+                if selected_column_display_name:
+                    row_with_real_names[selected_column_display_name] = fields.get(name)
             yield row_with_real_names
             if limit.is_reached():
                 return

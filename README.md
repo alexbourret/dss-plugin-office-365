@@ -3,7 +3,7 @@
 - Using GIT:
     - Navigate to > Plugins > Add Plugin > Fetch from git repository, set Repository URL to `https://github.com/alexbourret/dss-plugin-office-365.git` 
 - Using the zip file
-    - Download the zip file from https://github.com/alexbourret/dss-plugin-office-365/releases/tag/v0.0.3
+    - Download the zip file from https://github.com/alexbourret/dss-plugin-office-365/releases/tag/v0.0.4
     - Navigate to > Plugins > Add Plugin > Upload > Browse and point to the downloaded file
 
 # Testing the fix
