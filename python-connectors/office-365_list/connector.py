@@ -87,8 +87,10 @@ class Office365ListConnector(Connector):
                 return
 
     def get_writer(self, dataset_schema=None, dataset_partitioning=None,
-                   partition_id=None):
-        self.list.delete_all_rows()
+                   partition_id=None, write_mode='OVERWRITE'):
+        logger.info("get_writer caleed in {} mode".format(write_mode))
+        if write_mode == 'OVERWRITE':
+            self.list.delete_all_rows()
         sharepoint_columns = []
         for sharepoint_column in self.list.get_columns():
             sharepoint_columns.append(
