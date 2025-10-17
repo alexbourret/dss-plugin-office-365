@@ -71,7 +71,8 @@ class Office365ListConnector(Connector):
         for column in self.list.get_columns():
             column_display_name[column.get("name")] = column.get("displayName")
             lookup_list.append(column)
-
+        # Special case for the id column, because, why not...
+        column_display_name["id"] = "ID"
         for row in self.list.get_next_row(
             select_list=lookup_list.get_select(),
         ):
