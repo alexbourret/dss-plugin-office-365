@@ -6,6 +6,7 @@
     },
     "readable": true,
     "writable": true,
+    "supportAppend": true,
     "kind": "PYTHON",
     "paramsPythonSetup": "browse_sp_lists.py",
     "params": [

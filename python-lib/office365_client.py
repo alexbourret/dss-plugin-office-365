@@ -302,7 +302,8 @@ def assert_responses_ok(responses):
 class Office365ListWriter(object):
     def __init__(self, list, dataset_schema, batch_size=None):
         self.list = list
-        self.list.session.start_batch_mode(batch_size=batch_size)
+        if batch_size and batch_size > 1:
+            self.list.session.start_batch_mode(batch_size=batch_size)
         self.columns = dataset_schema.get("columns")
 
     def write_row(self, row):
