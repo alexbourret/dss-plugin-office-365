@@ -44,7 +44,7 @@ def do(payload, config, plugin_config, inputs):
 
         site = session.get_site(sharepoint_site_id)
         for sharepoint_list in site.get_next_list():
-            choices.append(sharepoint_list.get("displayName"), sharepoint_list.get("id"))
+            choices.append_alphabetically(sharepoint_list.get("displayName"), sharepoint_list.get("id"))
         choices.append_manual_select()
 
     if parameter_name == "sharepoint_drive_id":
