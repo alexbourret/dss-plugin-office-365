@@ -1,7 +1,7 @@
 {
     "meta" : {
-        "label": "Access Office 365 messages",
-        "description": "",
+        "label": "Office 365 Outlook",
+        "description": "Retrieve messages from your Outlook account",
         "icon": "icon-cloud"
     },
     "readable": true,
